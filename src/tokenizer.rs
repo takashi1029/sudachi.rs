@@ -80,6 +80,10 @@ impl<'a> Tokenizer<'a> {
 
         let node_list = lattice.get_best_path();
 
+        if node_list.len() == 0 {
+            return Vec::new();
+        }
+
         let mut word_id_list = Vec::new();
         if *mode == Mode::C {
             word_id_list = node_list

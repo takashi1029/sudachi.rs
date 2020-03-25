@@ -43,7 +43,10 @@ impl<'a> Lattice<'a> {
                 r_node.best_previous_node_index = Some((begin, i));
             }
         }
-        r_node.total_cost += r_node.cost as i32;
+
+        if (r_node.total_cost < i32::MAX) {
+            r_node.total_cost += r_node.cost as i32;
+        }
 
         r_node.is_connected_to_bos = match r_node.best_previous_node_index {
             Some(_) => true,
@@ -67,7 +70,8 @@ impl<'a> Lattice<'a> {
         let eos_node = self.end_lists[self.size].last().unwrap();
 
         if !eos_node.is_connected_to_bos {
-            panic!("EOS isn't connected to BOS");
+            return Vec::new();
+            //panic!("EOS isn't connected to BOS");
         }
 
         let mut path = Vec::new();

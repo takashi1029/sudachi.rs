@@ -9,7 +9,7 @@ pub struct Morpheme<'a> {
 
 impl<'a> Morpheme<'a> {
     pub fn new(word_id: usize, grammar: &'a Grammar<'a>, lexicon: &Lexicon) -> Morpheme<'a> {
-        let word_info = lexicon.get_word_info(word_id);
+        let word_info = lexicon.get_word_info(word_id).unwrap();
         Morpheme { word_info, grammar }
     }
 

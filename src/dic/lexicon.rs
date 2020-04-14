@@ -59,8 +59,11 @@ impl<'a> Lexicon<'a> {
         l
     }
 
-    pub fn get_word_info(&self, word_id: usize) -> WordInfo {
-        self.word_infos.get_word_info(word_id)
+    pub fn get_word_info(&self, word_id: usize) -> Option<WordInfo> {
+        match self.word_infos.get_word_info(word_id) {
+            Some(result) => Some(result),
+            None => None
+        }
     }
 
     pub fn get_word_param(&self, word_id: usize) -> (i16, i16, i16) {

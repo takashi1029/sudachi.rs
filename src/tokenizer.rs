@@ -94,8 +94,14 @@ impl<'a> Tokenizer<'a> {
             for node in &node_list {
                 let node_word_id = node.word_id.unwrap() as usize;
                 let word_ids = match *mode {
-                    Mode::A => self.lexicon.get_word_info(node_word_id).a_unit_split,
-                    Mode::B => self.lexicon.get_word_info(node_word_id).b_unit_split,
+                    Mode::A => match self.lexicon.get_word_info(node_word_id) {
+                        Some(result) => result.a_unit_split,
+                        None => return vec![]
+                    }
+                    Mode::B => match self.lexicon.get_word_info(node_word_id) {
+                        Some(result) => result.b_unit_split,
+                        None => return vec![]
+                    }
                     _ => panic!(),
                 };
 

@@ -15,19 +15,26 @@ impl<'a> WordInfos<'a> {
         }
     }
 
-    pub fn get_word_info(&self, word_id: usize) -> WordInfo {
-        let index = le_u32(&self.bytes[self.offset + (4 * word_id)..])
-            .unwrap()
-            .1 as usize; // wordIdToOffset()
+    pub fn get_word_info(&self, word_id: usize) -> Option<WordInfo>  {
+        if self.offset + (4 * word_id) > self.bytes.len() {
+            return None;
+        }
+        let index = match le_u32(&self.bytes[self.offset + (4 * word_id)..]) {
+            Ok(n) => n.1 as usize, // wordIdToOffset()
+            Err(err) => return None
+        };
         let mut word_info = word_info_parser(self.bytes, index).unwrap().1;
 
         // TODO: can we set dictionary_form within the word_info_parser?
         let dfwi = word_info.dictionary_form_word_id;
         if (dfwi >= 0) & (dfwi != word_id as i32) {
-            word_info.dictionary_form = self.get_word_info(dfwi as usize).surface;
+            word_info.dictionary_form = match self.get_word_info(dfwi as usize) {
+                Some(result) => result.surface,
+                None => return None
+            }
         };
 
-        word_info
+        Some(word_info)
     }
 
     // TODO: is_valid_split()
@@ -39,7 +46,10 @@ named!(
         length: le_u8 >>
         v: count!(le_u16, length as usize) >>
 
-        (String::from_utf16(&v).unwrap())
+        (match String::from_utf16(&v) {
+            Ok(n) => n,
+            Err(err) => "".to_string()
+        })
     )
 );
 
